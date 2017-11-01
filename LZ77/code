@@ -1,0 +1,83 @@
+
+package javaapplication1;
+import java.io.FileWriter;
+import java.util.*;
+import java.io.IOException;
+public class JavaApplication1 {
+    public static class tags{
+        int backward;
+        int forward;
+        char next;
+    }
+    
+
+    public static Vector<tags> v = new Vector<tags>();
+    public static void compress(String s) throws IOException{
+        Vector<String> vwrite=new Vector();
+        String line="";
+        String temp = "";
+        for(int i=0 ; i<s.length() ; i++){
+            temp+=s.charAt(i);
+           if((s.substring(0 , i-temp.length()+1)).contains(temp) == false ){
+                tags tag = new tags();
+                tag.forward = temp.length()-1;
+                tag.next = s.charAt(i);
+                temp = temp.substring(0, temp.length()-1);
+                if(temp.length() == 0) tag.backward = 0;
+                else tag.backward = (i - temp.length()) - s.substring(0, i - temp.length()).lastIndexOf(temp);
+                v.addElement(tag);
+                System.out.println(tag.backward +" "+tag.forward +" "+ tag.next);
+                temp = "";
+                line=tag.backward +" "+tag.forward +" "+ tag.next;
+                vwrite.add(line);
+            }
+           else if(i == s.length() - 1){
+               tags tag = new tags();
+               tag.forward = temp.length();
+               tag . next = '/';
+               tag.backward = (i - temp.length() + 1) - s.substring(0, i - temp.length() + 1).lastIndexOf(temp);
+               v.add(tag);
+               System.out.println(tag.backward +" "+tag.forward +" "+ tag.next);
+                   line=tag.backward +" "+tag.forward +" "+ tag.next;
+                                   vwrite.add(line);
+
+
+           }
+        }
+        
+   FileWriter f=new FileWriter("E:/test.txt");
+   for(int i=0;i<vwrite.size();i++)
+   f.write(vwrite.elementAt(i));
+   
+   f.close();
+   
+    }
+    public static String decompress(){
+        String temp = "";
+        for(int i = 0 ; i<v.size() ; i++){
+            if(v.elementAt(i).backward == 0) temp = temp + v.elementAt(i).next;
+            else if(v.elementAt(i).next == '/') 
+                temp = temp + temp.substring(temp.length() - v.elementAt(i).backward, 
+                        temp.length() - v.elementAt(i).backward + v.elementAt(i).forward);
+            else{
+                
+                temp = temp + temp.substring(temp.length() - v.elementAt(i).backward, 
+                        temp.length() - v.elementAt(i).backward + v.elementAt(i).forward);
+                
+                temp = temp + v.elementAt(i).next;
+            }
+        }
+        System.out.println(temp);
+        return temp;
+    }
+    public static void main(String[] args) throws IOException{
+        window gui =new window();
+        gui.setVisible(true);
+        String x;
+        Scanner q = new Scanner(System . in );
+         x = q.next();
+         compress(x);
+        
+    }
+}
+    
